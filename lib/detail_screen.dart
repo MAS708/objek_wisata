@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:objek_wisata/model/tourism_place.dart';
 
 class DetailScreen extends StatelessWidget {
-  const DetailScreen({super.key});
+  final TourismPlace place;
+  const DetailScreen({Key? key, required this.place}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -9,15 +11,39 @@ class DetailScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.asset(
-                'images/museum-ranggawarsita.jpg',
-                fit: BoxFit.fill,
+            children: <Widget>[
+              Stack(
+                children: <Widget>[
+                  Image.asset(place.imageAsset),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          const FavoriteButton(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 margin: const EdgeInsets.only(top: 16.0),
-                child: const Text(
-                  'Museum Ranggawarsita',
+                child: Text(
+                  place.name,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 30.0, fontFamily: 'Staatliches'),
                 ),
@@ -26,26 +52,30 @@ class DetailScreen extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
+                  children: <Widget>[
                     Column(
-                      children: [
-                        Icon(Icons.calendar_today),
-                        SizedBox(height: 8.0),
-                        Text('Open Tuesday-Sunday'),
+                      children: <Widget>[
+                        const Icon(Icons.calendar_today),
+                        const SizedBox(height: 8.0),
+                        Text(place.openDays),
                       ],
                     ),
                     Column(
-                      children: [
-                        Icon(Icons.access_time),
-                        SizedBox(height: 8.0),
-                        Text('08:00 - 15:00'),
+                      children: <Widget>[
+                        const Icon(Icons.access_time),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          place.openTime,
+                        ),
                       ],
                     ),
                     Column(
-                      children: [
-                        Icon(Icons.monetization_on),
-                        SizedBox(height: 8.0),
-                        Text('Rp 2.000 - Rp 4.000'),
+                      children: <Widget>[
+                        const Icon(Icons.monetization_on),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          place.ticketPrice,
+                        ),
                       ],
                     ),
                   ],
@@ -53,53 +83,59 @@ class DetailScreen extends StatelessWidget {
               ),
               Container(
                 padding: const EdgeInsets.all(16.0),
-                child: const Text(
-                  '''Museum Ranggawarsita adalah museum yang menyimpan dan memamerkan berbagai warisan budaya dan benda budaya Jawa Tengah yang berlokasi di Kota Semarang, Indonesia. Museum ini diresmikan tanggal 5 Juli 1989 dan memiliki koleksi 59784 koleksi.''',
+                child: Text(
+                  place.description,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
+                    fontSize: 16.0,
                     fontFamily: 'Oxygen',
                   ),
                 ),
               ),
-              SizedBox(
+              Container(
                 height: 150,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  children: [
-                    Padding(
+                  children: place.imageUrls.map((url) {
+                    return Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          'https://blog.docar.co.id/wp-content/uploads/2017/01/Museum-Ranggawarsita.jpg',
-                        ),
+                        child: Image.network(url),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          'http://1.bp.blogspot.com/-zJ77SWLOmvI/Uv_OfxzF36I/AAAAAAAAP6Q/7PIsxtdhK0E/s1600/Gajah_purba_museum_ranggawarsito.jpg',
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          'https://travelspromo.com/wp-content/uploads/2019/06/Bagian-dalam-Museum-Ronggowarsito.-Foto-Gmap-Mr.-Andhen-Official-e1559563508910-640x400.jpg.webp',
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+                  }).toList(),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class FavoriteButton extends StatefulWidget {
+  const FavoriteButton({Key? key}) : super(key: key);
+
+  @override
+  _FavoriteButtonState createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<FavoriteButton> {
+  @override
+  bool isFavorite = false;
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(
+        isFavorite ? Icons.favorite : Icons.favorite_border,
+        color: Colors.red,
+      ),
+      onPressed: () {
+        setState(() {
+          isFavorite = !isFavorite;
+        });
+      },
     );
   }
 }
